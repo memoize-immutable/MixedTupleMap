@@ -3,6 +3,13 @@ function MixedTupleMap() {
   this.clear();
 }
 
+const HASHED_INDEX = -1;
+const DUMMY_ARG = [];
+
+function getArgOrHashDummy(tuple, index) {
+  return index === HASHED_INDEX ? DUMMY_ARG : tuple[index];
+}
+
 MixedTupleMap.prototype = {
   toString: function() {
     return '[object MixedTupleMap]';
@@ -25,7 +32,11 @@ MixedTupleMap.prototype = {
     for( let i = 0; i < l; i++) {
       let arg = tuple[i];
       let argType = typeof arg;
-      if ( argType !== null && ( argType === 'object' || argType === 'function' ) ) {
+      if (arg && typeof arg.hash === 'function') {
+        prim.push( '' + arg.hash() );
+        primOrder.push( i );
+        nonPrimOrder.push( HASHED_INDEX );
+      } else if ( argType !== null && ( argType === 'object' || argType === 'function' ) ) {
         nonPrimOrder.push( i );
       } else {
         prim.push( argType === 'string' ? '"' + arg + '"' : '' + arg );
@@ -56,7 +67,7 @@ MixedTupleMap.prototype = {
     const l = hash.nonPrimOrder.length;
 
     for( let i = 0; i < l; i++) {
-      const arg = tuple[hash.nonPrimOrder[i]]
+      const arg = getArgOrHashDummy(tuple, hash.nonPrimOrder[i]);
       if ( curr.has && curr.has(arg) ) {
         curr = curr.get(arg);
       } else {
@@ -74,7 +85,7 @@ MixedTupleMap.prototype = {
     let mustCreate = false;
 
     for( let i = 0; i < l; i++) {
-      const arg = tuple[hash.nonPrimOrder[i]]
+      const arg = getArgOrHashDummy(tuple, hash.nonPrimOrder[i]);
       if ( !mustCreate && curr.has(arg) ) {
         curr = curr.get(arg);
       } else {
@@ -94,7 +105,7 @@ MixedTupleMap.prototype = {
     const l = hash.nonPrimOrder.length;
 
     for( let i = 0; i < l; i++) {
-      const arg = tuple[hash.nonPrimOrder[i]]
+      const arg = getArgOrHashDummy(tuple, hash.nonPrimOrder[i]);
       const ret = curr.get && curr.get(arg);
       if ( ret === undefined ) {
         return ret;
