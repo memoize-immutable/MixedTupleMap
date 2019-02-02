@@ -3,7 +3,7 @@ import MixedTupleMap from '../index';
 describe('MixedTupleMap', () => {
   let cache
   const obj = {'Carole Granade-Segers': 'Human unicorn'};
-  const hashableObj = Object.assign({}, obj, {hash: () => '#yolo'});
+  const hashableObj = Object.assign({}, obj, {hashCode: () => '#yolo'});
   const hashableObjClone = Object.assign({}, hashableObj);
   const arr = ['Carole', 'Granade', 'Segers', 'we', 'love', 'you'];
   const str = 'Knee Breaker';
@@ -66,7 +66,7 @@ describe('MixedTupleMap', () => {
       expect(cache.get([fun])).toEqual(undefined);
     });
 
-    it('should work with `({})` with hash function', () => {
+    it('should work with `({})` with hashCode function', () => {
       cache.set([hashableObj], res);
 
       expect(cache.has([hashableObj])).toEqual(true);

@@ -6,6 +6,7 @@ function MixedTupleMap() {
 const HASHED_INDEX = -1;
 const DUMMY_ARG = [];
 
+// Return the argument at the given index, or a dummy argument for hashed non-primitives.
 function getArgOrHashDummy(tuple, index) {
   return index === HASHED_INDEX ? DUMMY_ARG : tuple[index];
 }
@@ -32,9 +33,11 @@ MixedTupleMap.prototype = {
     for( let i = 0; i < l; i++) {
       let arg = tuple[i];
       let argType = typeof arg;
-      if (arg && typeof arg.hash === 'function') {
-        prim.push( '' + arg.hash() );
+      // Immutable.js and similar libraries implement `hashCode` for efficient object comparison.
+      if (arg && typeof arg.hashCode === 'function') {
+        prim.push( '' + arg.hashCode() );
         primOrder.push( i );
+        // Add a dummy index to signify this non-primitive argument was hashed into a primitive argument.
         nonPrimOrder.push( HASHED_INDEX );
       } else if ( argType !== null && ( argType === 'object' || argType === 'function' ) ) {
         nonPrimOrder.push( i );
